@@ -1,4 +1,26 @@
 # streamlit_app.py (FINAL FIXED VERSION)
+# streamlit_app.py (FINAL FIXED VERSION)
+
+# --------------------------------------------------------------------
+# FIX for sklearn model loaded on newer versions (Streamlit Cloud)
+# --------------------------------------------------------------------
+import sklearn.compose._column_transformer as ct
+
+# Dummy class to replace old sklearn internal class missing in new versions
+class _RemainderColsList(list):
+    pass
+
+# Register the dummy class so joblib can unpickle the old model
+ct._RemainderColsList = _RemainderColsList
+
+# FIX for older HistGradientBoosting missing types
+import sklearn.ensemble._hist_gradient_boosting.binning as binning
+class OldBinMapper:
+    pass
+binning.BinMapper = getattr(binning, "BinMapper", OldBinMapper)
+
+# Additional fallback for ColumnTransformer internals
+import sklearn.utils._estimator_html_repr
 
 import streamlit as st
 import pandas as pd
